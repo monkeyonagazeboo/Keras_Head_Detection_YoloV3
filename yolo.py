@@ -3,27 +3,32 @@
 Class definition of YOLO_v3 style detection model on image and video
 """
 
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
 import colorsys
 import os
 from timeit import default_timer as timer
 
 import numpy as np
-from keras import backend as K
-from keras.models import load_model
-from keras.layers import Input
+from tensorflow.python.keras import backend as K
+from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Input
 from PIL import Image, ImageFont, ImageDraw
 
-from yolo3.model import yolo_eval, yolo_body, tiny_yolo_body
-from yolo3.utils import letterbox_image
+from yolov3.model import yolo_eval, yolo_body, tiny_yolo_body
+from yolov3.utils import letterbox_image
 from keras.utils import multi_gpu_model
 
 class YOLO(object):
     _defaults = {
-        #"model_path": 'model_data/yolo.h5',
-        "model_path": 'logs/000/trained_weights_final.h5',
-        "anchors_path": 'model_data/yolo_anchors_0.txt',
-        #"classes_path": 'model_data/coco_classes.txt',
-        "classes_path": 'model_data/head_class.txt',
+        "model_path": 'model_data/yolo.h5',
+        # "model_path": 'logs/000/trained_weights_final.h5',
+        "anchors_path": 'model_data/yolo_anchors.txt',
+        # "anchors_path": 'model_data/tiny_yolo_anchors.txt',
+        "classes_path": 'model_data/coco_classes.txt',
+        # "classes_path": 'model_data/voc_classes.txt',
+        # "classes_path": 'model_data/head_class.txt',
         "score" : float(input('Score threshold:')),#0.3
         "iou" : float(input('Iou threshold:')),#0.45
         "model_image_size" : (416, 416),
@@ -69,7 +74,7 @@ class YOLO(object):
         is_tiny_version = num_anchors==6 # default setting
         try:
             self.yolo_model = load_model(model_path, compile=False)
-            print('模型已经加载了')
+            print('Model loaded')
         except:
             self.yolo_model = tiny_yolo_body(Input(shape=(None,None,3)), num_anchors//2, num_classes) \
                 if is_tiny_version else yolo_body(Input(shape=(None,None,3)), num_anchors//3, num_classes)

@@ -8,6 +8,8 @@ Reads Darknet config and weights and creates Keras model with TF backend.
 
 """
 
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 import argparse
@@ -26,17 +28,18 @@ import numpy as np
 
 from keras import backend as K
 
-from keras.layers import (Conv2D, Input, ZeroPadding2D, Add,
+from tensorflow.keras.layers import (Conv2D, Input, ZeroPadding2D, Add,
 
-                          UpSampling2D, MaxPooling2D, Concatenate)
+                          UpSampling2D, MaxPooling2D, Concatenate,
+                                     BatchNormalization, LeakyReLU)
 
-from keras.layers.advanced_activations import LeakyReLU
+# from keras.layers.advanced_activations import LeakyReLU
 
-from keras.layers.normalization import BatchNormalization
+# from keras.layers.normalization import BatchNormalization
 
-from keras.models import Model
+from tensorflow.keras.models import Model
 
-from keras.regularizers import l2
+from tensorflow.keras.regularizers import l2
 
 from keras.utils.vis_utils import plot_model as plot
 
